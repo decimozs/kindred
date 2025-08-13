@@ -7,7 +7,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "husky"
+    "lint:fix": "next lint --fix",
+    "prepare": "husky",
+    "seed": "bun run ./src/util/seed.ts",
+    "db:reset": "bun run ./src/util/reset.ts",
+    "db:generate": "bun run drizzle-kit generate",
+    "db:migrate": "bun run drizzle-kit migrate",
+    "db:push": "bun run drizzle-kit push",
+    "db:studio": "bun run drizzle-kit studio",
+    "db:inspect": "bun run drizzle-kit introspect"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",
