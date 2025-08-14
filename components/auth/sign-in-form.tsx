@@ -11,6 +11,8 @@ import { signIn } from "@/actions/auth";
 import { showToast } from "../core/toast-notification";
 import { redirect } from "next/navigation";
 import { FieldError } from "../core/field-error";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 const signInSchema = z.object({
   email: z.email("Invalid email address"),
@@ -34,9 +36,13 @@ const formOpts = formOptions({
 });
 
 export default function SignInForm() {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const form = useForm({
     ...formOpts,
     onSubmit: async ({ value, formApi }) => {
+      setIsLoading(true);
+
       const response = await signIn(value);
 
       if (!response.success) {
@@ -44,6 +50,7 @@ export default function SignInForm() {
           "error",
           response.message || "Failed to sign in. Please try again.",
         );
+        setIsLoading(false);
         return;
       }
 
@@ -134,8 +141,12 @@ export default function SignInForm() {
           </Link>
         </div>
 
-        <Button type="submit" className="w-full mt-4">
-          Sign in
+        <Button type="submit" className="w-full mt-4" disabled={isLoading}>
+          {isLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            "Sign in"
+          )}
         </Button>
 
         <div className="before:bg-border after:bg-border flex items-center gap-3 before:h-px before:flex-1 after:h-px after:flex-1">

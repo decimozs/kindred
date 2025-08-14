@@ -1,6 +1,7 @@
 "use server";
 
 import { auth } from "@/lib/auth";
+import { ActionResponse } from "@/lib/types";
 
 interface SignUpParams {
   name: string;

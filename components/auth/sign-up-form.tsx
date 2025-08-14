@@ -10,6 +10,8 @@ import { signUp } from "@/actions/auth";
 import { FieldError } from "../core/field-error";
 import { showToast } from "../core/toast-notification";
 import { redirect } from "next/navigation";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 const signUpFormSchema = z
   .object({
@@ -40,9 +42,13 @@ const formOpts = formOptions({
 });
 
 export default function SignUpForm() {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const form = useForm({
     ...formOpts,
     onSubmit: async ({ value, formApi }) => {
+      setIsLoading(true);
+
       const response = await signUp({
         name: value.name,
         email: value.email,
@@ -54,12 +60,13 @@ export default function SignUpForm() {
           "error",
           response.message || "Failed to sign up. Please try again.",
         );
+        setIsLoading(false);
         return;
       }
 
       formApi.reset();
       showToast("success", "Sign up successfully!");
-      redirect("/sign-in");
+      redirect("/dashboard");
     },
   });
 
@@ -150,8 +157,12 @@ export default function SignUpForm() {
           </form.Field>
         </div>
 
-        <Button type="submit" className="w-full mt-4">
-          Sign up
+        <Button type="submit" className="w-full mt-4" disabled={isLoading}>
+          {isLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            "Sign up"
+          )}
         </Button>
 
         <div className="text-center text-sm">
