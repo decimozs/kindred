@@ -23,9 +23,9 @@ const signUpFormSchema = z
     path: ["confirmPassword"],
   });
 
-type SignUp = z.infer<typeof signUpFormSchema>;
+type SignUpFormValues = z.infer<typeof signUpFormSchema>;
 
-const defaultValues: SignUp = {
+const defaultValues: SignUpFormValues = {
   name: "",
   email: "",
   password: "",
@@ -49,8 +49,11 @@ export default function SignUpForm() {
         password: value.password,
       });
 
-      if (!response) {
-        showToast("error", "Failed to sign up. Please try again.");
+      if (!response.success) {
+        showToast(
+          "error",
+          response.message || "Failed to sign up. Please try again.",
+        );
         return;
       }
 

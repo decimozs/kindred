@@ -5,38 +5,136 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import z from "zod/v4";
+import { formOptions, useForm } from "@tanstack/react-form";
+import { signIn } from "@/actions/auth";
+import { showToast } from "../core/toast-notification";
+import { redirect } from "next/navigation";
+import { FieldError } from "../core/field-error";
+
+const signInSchema = z.object({
+  email: z.email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+  rememberMe: z.boolean().optional(),
+});
+
+export type SignInFormValues = z.infer<typeof signInSchema>;
+
+const defaultValues: SignInFormValues = {
+  email: "",
+  password: "",
+  rememberMe: false,
+};
+
+const formOpts = formOptions({
+  defaultValues,
+  validators: {
+    onSubmit: signInSchema,
+  },
+});
 
 export default function SignInForm() {
+  const form = useForm({
+    ...formOpts,
+    onSubmit: async ({ value, formApi }) => {
+      const response = await signIn(value);
+
+      if (!response.success) {
+        showToast(
+          "error",
+          response.message || "Failed to sign in. Please try again.",
+        );
+        return;
+      }
+
+      formApi.reset();
+      showToast("success", "Sign in successfully!");
+      redirect("/dashboard");
+    },
+  });
+
   return (
     <div className="p-8 h-screen w-full flex items-center justify-center">
-      <div className="flex flex-col gap-4 w-full max-w-md">
+      <form
+        className="flex flex-col gap-4 w-full max-w-md"
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          form.handleSubmit();
+        }}
+      >
         <div>
           <h1 className="text-2xl font-semibold">Kindred 🌟</h1>
           <p>Welcome back to Kindred!</p>
         </div>
+
         <div className="*:not-first:mt-2">
           <Label className="text-lg">Email</Label>
-          <Input type="email" placeholder="Enter your email" />
+          <form.Field name="email">
+            {(field) => (
+              <>
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  field={field}
+                />
+                <FieldError field={field} />
+              </>
+            )}
+          </form.Field>
         </div>
 
         <div className="*:not-first:mt-2 relative">
           <Label className="text-lg">Password</Label>
-          <Input placeholder="Enter your password" type="password" />
+          <form.Field name="password">
+            {(field) => (
+              <>
+                <Input
+                  type="password"
+                  placeholder="Enter your password"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  field={field}
+                />
+                <FieldError field={field} />
+              </>
+            )}
+          </form.Field>
         </div>
 
         <div className="flex justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Checkbox />
-            <Label className="text-muted-foreground font-normal">
-              Remember me
-            </Label>
+            <form.Field name="rememberMe">
+              {(field) => (
+                <>
+                  <Checkbox
+                    checked={field.state.value}
+                    onCheckedChange={(checked) =>
+                      field.handleChange(Boolean(checked))
+                    }
+                  />
+                  <Label
+                    className="text-muted-foreground font-normal"
+                    onClick={() => field.handleChange(!field.state.value)}
+                  >
+                    Remember me
+                  </Label>
+                </>
+              )}
+            </form.Field>
           </div>
-          <a className="text-sm underline hover:no-underline" href="#">
+
+          <Link
+            className="text-sm underline hover:no-underline"
+            href="/forgot-password"
+          >
             Forgot password?
-          </a>
+          </Link>
         </div>
 
-        <Button type="button" className="w-full mt-4">
+        <Button type="submit" className="w-full mt-4">
           Sign in
         </Button>
 
@@ -52,7 +150,7 @@ export default function SignInForm() {
             Sign up
           </Link>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
