@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import { ActionResponse } from "@/lib/types";
+import { headers } from "next/headers";
 
 export interface SignUpParams {
   name: string;
@@ -59,6 +60,29 @@ export const signIn = async (
     return {
       success: false,
       message: e.message || "An error occurred during sign in.",
+    };
+  }
+};
+
+export const signOut = async (): Promise<
+  ActionResponse<Awaited<ReturnType<typeof auth.api.signOut>>>
+> => {
+  try {
+    const response = await auth.api.signOut({
+      headers: await headers(),
+    });
+
+    return {
+      success: true,
+      message: "Sign out successful.",
+      data: response,
+    };
+  } catch (error) {
+    const e = error as Error;
+
+    return {
+      success: false,
+      message: e.message || "An error occurred during sign out.",
     };
   }
 };
