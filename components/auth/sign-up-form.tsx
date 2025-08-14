@@ -3,17 +3,73 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import z from "zod/v4";
+import { formOptions, useForm } from "@tanstack/react-form";
+import { signUp } from "@/actions/auth";
+import { FieldError } from "../core/field-error";
+import { showToast } from "../core/toast-notification";
+import { redirect } from "next/navigation";
+
+const signUpFormSchema = z
+  .object({
+    name: z.string().min(1, "Name is required"),
+    email: z.email("Invalid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string().min(6, "Confirm password is required"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+type SignUp = z.infer<typeof signUpFormSchema>;
+
+const defaultValues: SignUp = {
+  name: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+};
+
+const formOpts = formOptions({
+  defaultValues,
+  validators: {
+    onSubmit: signUpFormSchema,
+  },
+});
 
 export default function SignUpForm() {
-  const [isVisible, setIsVisible] = useState<boolean>(false);
-  const toggleVisibility = () => setIsVisible((prevState) => !prevState);
+  const form = useForm({
+    ...formOpts,
+    onSubmit: async ({ value, formApi }) => {
+      const response = await signUp({
+        name: value.name,
+        email: value.email,
+        password: value.password,
+      });
+
+      if (!response) {
+        showToast("error", "Failed to sign up. Please try again.");
+        return;
+      }
+
+      formApi.reset();
+      showToast("success", "Sign up successfully!");
+      redirect("/sign-in");
+    },
+  });
 
   return (
     <div className="p-8 h-screen w-full flex items-center justify-center">
-      <div className="flex flex-col gap-4 w-full max-w-md">
+      <form
+        className="flex flex-col gap-4 w-full max-w-md"
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          form.handleSubmit();
+        }}
+      >
         <div>
           <h1 className="text-2xl font-semibold">Kindred 🌟</h1>
           <p>Create Account with Kindred!</p>
@@ -21,42 +77,77 @@ export default function SignUpForm() {
 
         <div className="*:not-first:mt-2">
           <Label className="text-lg">Name</Label>
-          <Input type="text" placeholder="Enter your name" />
+          <form.Field name="name">
+            {(field) => (
+              <>
+                <Input
+                  type="text"
+                  placeholder="Enter your name"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  field={field}
+                />
+                <FieldError field={field} />
+              </>
+            )}
+          </form.Field>
         </div>
 
         <div className="*:not-first:mt-2">
           <Label className="text-lg">Email</Label>
-          <Input type="email" placeholder="Enter your email" />
+          <form.Field name="email">
+            {(field) => (
+              <>
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  field={field}
+                />
+                <FieldError field={field} />
+              </>
+            )}
+          </form.Field>
         </div>
 
         <div className="*:not-first:mt-2 relative">
           <Label className="text-lg">Password</Label>
-          <Input
-            placeholder="Enter your password"
-            type={isVisible ? "text" : "password"}
-          />
-          <button
-            className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute top-2.5 mr-1 inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-            type="button"
-            onClick={toggleVisibility}
-            aria-label={isVisible ? "Hide password" : "Show password"}
-            aria-pressed={isVisible}
-            aria-controls="password"
-          >
-            {isVisible ? (
-              <EyeOffIcon size={16} aria-hidden="true" />
-            ) : (
-              <EyeIcon size={16} aria-hidden="true" />
+          <form.Field name="password">
+            {(field) => (
+              <>
+                <Input
+                  type="password"
+                  placeholder="Enter your password"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  field={field}
+                />
+                <FieldError field={field} />
+              </>
             )}
-          </button>
+          </form.Field>
         </div>
 
         <div className="*:not-first:mt-2">
           <Label className="text-lg">Confirm Password</Label>
-          <Input placeholder="Please confirm your password" type="password" />
+          <form.Field name="confirmPassword">
+            {(field) => (
+              <>
+                <Input
+                  type="password"
+                  placeholder="Please confirm your password"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  field={field}
+                />
+                <FieldError field={field} />
+              </>
+            )}
+          </form.Field>
         </div>
 
-        <Button type="button" className="w-full mt-4">
+        <Button type="submit" className="w-full mt-4">
           Sign up
         </Button>
 
@@ -67,7 +158,7 @@ export default function SignUpForm() {
           </Link>
           .
         </div>
-      </div>
+      </form>
     </div>
   );
 }
