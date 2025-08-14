@@ -7,12 +7,10 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import z from "zod/v4";
 import { formOptions, useForm } from "@tanstack/react-form";
-import { signIn } from "@/actions/auth";
-import { showToast } from "../core/toast-notification";
-import { redirect } from "next/navigation";
 import { FieldError } from "../core/field-error";
-import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "@/mutations/use-auth";
+import { redirect } from "next/navigation";
 
 const signInSchema = z.object({
   email: z.email("Invalid email address"),
@@ -36,26 +34,14 @@ const formOpts = formOptions({
 });
 
 export default function SignInForm() {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { signIn } = useAuth();
+  const isPending = signIn.isPending;
 
   const form = useForm({
     ...formOpts,
     onSubmit: async ({ value, formApi }) => {
-      setIsLoading(true);
-
-      const response = await signIn(value);
-
-      if (!response.success) {
-        showToast(
-          "error",
-          response.message || "Failed to sign in. Please try again.",
-        );
-        setIsLoading(false);
-        return;
-      }
-
+      await signIn.mutateAsync(value);
       formApi.reset();
-      showToast("success", "Sign in successfully!");
       redirect("/dashboard");
     },
   });
@@ -141,8 +127,8 @@ export default function SignInForm() {
           </Link>
         </div>
 
-        <Button type="submit" className="w-full mt-4" disabled={isLoading}>
-          {isLoading ? (
+        <Button type="submit" className="w-full mt-4" disabled={isPending}>
+          {isPending ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
             "Sign in"

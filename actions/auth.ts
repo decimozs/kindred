@@ -3,7 +3,7 @@
 import { auth } from "@/lib/auth";
 import { ActionResponse } from "@/lib/types";
 
-interface SignUpParams {
+export interface SignUpParams {
   name: string;
   email: string;
   password: string;
@@ -34,12 +34,12 @@ export const signUp = async (
   }
 };
 
-interface LoginParams extends Omit<SignUpParams, "name"> {
+export interface SignInParams extends Omit<SignUpParams, "name"> {
   rememberMe?: boolean;
 }
 
 export const signIn = async (
-  params: LoginParams,
+  params: SignInParams,
 ): Promise<
   ActionResponse<Awaited<ReturnType<typeof auth.api.signInEmail>>>
 > => {

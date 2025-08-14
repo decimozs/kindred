@@ -3,6 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "./db";
 import * as schema from "../db/index";
 import { nextCookies } from "better-auth/next-js";
+import { sendEmail } from "@/actions/email";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -17,6 +18,14 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    sendResetPassword: async ({ user, url, token }) => {
+      await sendEmail({
+        email: user.email,
+        subject: "Reset your password",
+        text: `Click the link to reset your password: ${url}?token=${token}`,
+        html: `<p>Click the link to reset your password: <a href="${url}?token=${token}">Reset Password</a></p>`,
+      });
+    },
   },
   plugins: [nextCookies()],
 });
