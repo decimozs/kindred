@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
@@ -63,7 +62,7 @@ export default function SignUpForm() {
 
         <div className="text-center text-sm">
           By signing up you agree to our{" "}
-          <Link href="/sign-in" className="underline">
+          <Link href="/sign-in" className="underline hover:no-underline">
             Terms
           </Link>
           .

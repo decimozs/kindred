@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 export default function SignInForm() {
@@ -69,9 +70,9 @@ export default function SignInForm() {
 
         <div className="text-center text-sm">
           Don&apos;t have an account?{" "}
-          <a href="#" className="underline">
+          <Link href="/sign-up" className="underline hover:no-underline">
             Sign up
-          </a>
+          </Link>
         </div>
       </div>
     </div>
