@@ -1,12 +1,14 @@
 "use client";
 
-import { signOut } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/mutations/use-auth";
 import { redirect } from "next/navigation";
 
 export default function Dashboard() {
+  const { signOut } = useAuth();
+
   const handleSignOut = async () => {
-    await signOut();
+    await signOut.mutateAsync();
     redirect("/sign-in");
   };
 

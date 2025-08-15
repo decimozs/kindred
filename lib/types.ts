@@ -1,5 +1,5 @@
 export interface ActionResponse<T> {
-  success: boolean;
+  success?: boolean;
   message?: string;
   data?: T;
 }

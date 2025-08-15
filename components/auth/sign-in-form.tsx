@@ -121,7 +121,7 @@ export default function SignInForm() {
 
           <Link
             className="text-sm underline hover:no-underline"
-            href="/forgot-password"
+            href="/email-verification"
           >
             Forgot password?
           </Link>
