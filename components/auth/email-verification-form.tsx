@@ -62,7 +62,7 @@ export default function EmailVerificationForm() {
       >
         <div>
           <h1 className="text-2xl font-semibold">Kindred 🌟</h1>
-          <p>Welcome back to Kindred!</p>
+          <p>Email Verification</p>
         </div>
 
         {isEmailSent ? (
