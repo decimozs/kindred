@@ -147,6 +147,14 @@ export default function SignUpForm() {
           )}
         </Button>
 
+        <div className="before:bg-border after:bg-border flex items-center gap-3 before:h-px before:flex-1 after:h-px after:flex-1">
+          <span className="text-muted-foreground text-xs">Or</span>
+        </div>
+
+        <Button variant="outline" type="button">
+          Sign up with Google
+        </Button>
+
         <div className="text-center text-sm">
           By signing up you agree to our{" "}
           <Link href="/sign-in" className="underline hover:no-underline">

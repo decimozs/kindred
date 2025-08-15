@@ -139,7 +139,9 @@ export default function SignInForm() {
           <span className="text-muted-foreground text-xs">Or</span>
         </div>
 
-        <Button variant="outline">Login with Google</Button>
+        <Button variant="outline" type="button">
+          Sign in with Google
+        </Button>
 
         <div className="text-center text-sm">
           Don&apos;t have an account?{" "}
