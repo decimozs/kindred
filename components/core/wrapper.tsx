@@ -9,7 +9,7 @@ export function DashboardPageWrapper({ children, title }: WrapperProps) {
   return (
     <div className="p-8">
       <div>
-        <p>{title}</p>
+        <p className="text-2xl font-bold">{title}</p>
       </div>
       {children}
     </div>
