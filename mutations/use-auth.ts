@@ -1,4 +1,5 @@
 import {
+  googleAuth,
   requestPasswordReset,
   RequestPasswordResetParams,
   resetPassword,
@@ -12,6 +13,7 @@ import {
   UpdatePasswordParams,
 } from "@/actions/auth";
 import { showToast } from "@/components/core/toast-notification";
+import { authClient } from "@/lib/auth-client";
 import { useMutation } from "@tanstack/react-query";
 
 function useSignIn() {
@@ -161,6 +163,31 @@ function useUpdatePassword() {
   });
 }
 
+function useGoogleAuth() {
+  const handleGoogleAuth = async () => {
+    const response = await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/dashboard",
+    });
+
+    if (!response.data || !response) {
+      throw new Error("Failed to sign in with Google. Please try again.");
+    }
+
+    return response;
+  };
+
+  return useMutation({
+    mutationFn: handleGoogleAuth,
+    onError: (error) => {
+      showToast("error", error.message);
+    },
+    onSuccess: () => {
+      showToast("info", "Connecting with Google...");
+    },
+  });
+}
+
 export function useAuth() {
   const signIn = useSignIn();
   const signUp = useSignUp();
@@ -168,6 +195,7 @@ export function useAuth() {
   const requestPasswordReset = useRequestPasswordReset();
   const resetPassword = useResetPassword();
   const updatePassword = useUpdatePassword();
+  const googleAuth = useGoogleAuth();
 
   return {
     signIn,
@@ -176,5 +204,6 @@ export function useAuth() {
     requestPasswordReset,
     resetPassword,
     updatePassword,
+    googleAuth,
   };
 }

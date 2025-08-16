@@ -40,7 +40,7 @@ const formOpts = formOptions({
 });
 
 export default function SignUpForm() {
-  const { signUp } = useAuth();
+  const { signUp, googleAuth } = useAuth();
   const isPending = signUp.isPending;
 
   const form = useForm({
@@ -51,6 +51,10 @@ export default function SignUpForm() {
       redirect("/dashboard");
     },
   });
+
+  const handleGoogleSignUp = async () => {
+    await googleAuth.mutateAsync();
+  };
 
   return (
     <div className="p-8 h-screen w-full flex items-center justify-center">
@@ -151,7 +155,7 @@ export default function SignUpForm() {
           <span className="text-muted-foreground text-xs">Or</span>
         </div>
 
-        <Button variant="outline" type="button">
+        <Button variant="outline" type="button" onClick={handleGoogleSignUp}>
           Sign up with Google
         </Button>
 
