@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/mutations/use-auth";
 import { redirect } from "next/navigation";
 
-export default function DashboardPage() {
+export default function ProfilePage() {
   const { signOut } = useAuth();
 
   const handleSignOut = async () => {
@@ -14,7 +14,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <DashboardPageWrapper title="Home">
+    <DashboardPageWrapper title="Profile">
       <Button onClick={handleSignOut}>Sign out</Button>
     </DashboardPageWrapper>
   );

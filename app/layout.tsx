@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import "./globals.css";
 import QueryProvider from "@/components/provider/query-provider";
 import { ThemeProvider } from "@/components/provider/theme-provider";
@@ -33,7 +32,6 @@ export default function RootLayout({
       >
         <Toaster />
         <QueryProvider>
-          <ReactQueryDevtools initialIsOpen={false} />
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
